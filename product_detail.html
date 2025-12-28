@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        /* 导航栏 */
+        .header {
+            background-color: #ff4400;
+            color: white;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .search-box {
+            display: flex;
+            flex: 1;
+            max-width: 600px;
+            margin: 0 20px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .search-btn {
+            background-color: #ff5500;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        
+        /* 商品详情容器 */
+        .product-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        /* 商品图片 */
+        .product-images {
+            flex: 1;
+        }
+        
+        .main-image {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .main-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+        }
+        
+
+        
+        /* 商品信息 */
+        .product-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .product-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .product-price {
+            font-size: 32px;
+            color: #ff4400;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        /* 规格选择 */
+        .specifications {
+            margin-bottom: 30px;
+        }
+        
+        .spec-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .spec-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .spec-option {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .spec-option:hover {
+            border-color: #ff4400;
+        }
+        
+        .spec-option.active {
+            border-color: #ff4400;
+            background-color: #fff5f0;
+            color: #ff4400;
+        }
+        
+        /* 数量控制 */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .quantity-label {
+            margin-right: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .quantity-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .quantity-input input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        /* 操作按钮区域 - 已移除立即购买功能 */
+        .action-buttons {
+            display: none;
+        }
+        
+        /* 返回首页按钮 */
+        .back-to-home {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background-color: #ff4400;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        
+        .back-btn:hover {
+            background-color: #ff5500;
+        }
+        
+        /* 响应式设计 - 适配平板设备（最大宽度768px） */
+        @media (max-width: 768px) {
+            /* 导航栏改为垂直布局，提升移动端使用体验 */
+            .nav-container {
+                flex-direction: column; /* 改为垂直排列 */
+                align-items: stretch; /* 元素拉伸填满宽度 */
+            }
+            
+            /* 调整搜索框样式，适配垂直布局 */
+            .search-box {
+                margin: 10px 0; /* 上下间距，取消左右间距 */
+                max-width: none; /* 搜索框宽度填满容器 */
+            }
+            
+            /* 用户信息区域改为水平均匀分布 */
+            .user-info {
+                justify-content: space-around; /* 均匀分布 */
+                margin-top: 10px; /* 顶部间距 */
+            }
+            
+            /* 取消用户链接的左外边距 */
+            .user-info a {
+                margin: 0;
+            }
+            
+            /* 商品详情改为垂直布局，图片在上，信息在下 */
+            .product-container {
+                flex-direction: column; /* 改为垂直排列 */
+                padding: 10px; /* 减少内边距 */
+            }
+            
+            /* 调整商品主图高度，适配平板屏幕 */
+            .main-image img {
+                height: 300px; /* 降低高度 */
+            }
+            
+            /* 操作按钮区域改为垂直布局（如果启用的话） */
+            .action-buttons {
+                flex-direction: column; /* 改为垂直排列 */
+            }
+        }
+        
+        /* 响应式设计 - 适配手机设备（最大宽度500px） */
+        @media (max-width: 500px) {
+            /* 调整商品标题字体大小，适配小屏幕 */
+            .product-title {
+                font-size: 20px; /* 减小字体 */
+            }
+            
+            /* 调整商品价格字体大小 */
+            .product-price {
+                font-size: 24px; /* 减小字体 */
+            }
+            
+            /* 进一步降低商品主图高度，适配手机屏幕 */
+            .main-image img {
+                height: 250px; /* 降低高度 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">购物商城</div>
+            <div class="search-box">
+                <input type="text" placeholder="搜索商品">
+                <button class="search-btn">搜索</button>
+            </div>
+            <div class="user-info">
+                <span id="welcome-text"></span>
+                <a href="shopping_login.html" id="login-link">登录</a>
+                <a href="#" id="logout-link" style="display: none;">退出</a>
+
+            </div>
+        </div>
+    </header>
+    
+    <!-- 返回首页按钮 -->
+    <div class="back-to-home">
+        <a href="index.html" class="back-btn">返回首页</a>
+    </div>
+    
+    <!-- 商品详情容器 -->
+    <div class="product-container">
+        <!-- 商品图片 -->
+        <div class="product-images">
+            <div class="main-image">
+                <img id="mainImage" src="'./2/cainixihuan/1.png" alt="商品主图">
+            </div>
+        </div>
+        
+        <!-- 商品信息 -->
+        <div class="product-info">
+            <h1 class="product-title" id="productTitle">休闲外套</h1>
+            <div class="product-price" id="productPrice">¥199.00</div>
+            <div class="product-description" id="productDescription">
+                这款休闲外套采用高品质面料制作，穿着舒适透气，设计简约大方，适合各种场合穿着。
+                多种颜色可选，尺码齐全，是您秋季必备的单品。
+            </div>
+            
+            <!-- 规格选择 -->
+            <div class="specifications">
+                <div class="spec-title">颜色</div>
+                <div class="spec-options">
+                    <div class="spec-option active" data-spec="color" data-value="黑色">黑色</div>
+                    <div class="spec-option" data-spec="color" data-value="白色">白色</div>
+                    <div class="spec-option" data-spec="color" data-value="灰色">灰色</div>
+                </div>
+            </div>
+            
+            <div class="specifications">
+                <div class="spec-title">尺码</div>
+                <div class="spec-options">
+                    <div class="spec-option active" data-spec="size" data-value="S">S</div>
+                    <div class="spec-option" data-spec="size" data-value="M">M</div>
+                    <div class="spec-option" data-spec="size" data-value="L">L</div>
+                    <div class="spec-option" data-spec="size" data-value="XL">XL</div>
+                </div>
+            </div>
+            
+            <!-- 数量控制 -->
+            <div class="quantity-control">
+                <div class="quantity-label">数量</div>
+                <div class="quantity-input">
+                    <button class="quantity-btn" id="decreaseBtn">-</button>
+                    <input type="number" id="quantityInput" value="1" min="1" max="99">
+                    <button class="quantity-btn" id="increaseBtn">+</button>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+    
+    <script>
+        /**
+         * 页面加载完成后初始化所有功能
+         * 包括：登录状态检查、商品数据加载、数量控制初始化、规格选择初始化
+         */
+        window.onload = function() {
+            checkLoginStatus();
+            loadProductData();
+            initQuantityControl();
+            initSpecifications();
+        };
+        
+        /**
+         * 检查用户登录状态
+         * 使用localStorage存储登录信息，实现无后端的状态管理
+         */
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const username = localStorage.getItem('username');
+            
+            if (isLoggedIn === 'true' && username) {
+                document.getElementById('welcome-text').textContent = `欢迎, ${username}`;
+                document.getElementById('login-link').style.display = 'none';
+                document.getElementById('logout-link').style.display = 'inline-block';
+            } else {
+                document.getElementById('welcome-text').textContent = '';
+                document.getElementById('login-link').style.display = 'inline-block';
+                document.getElementById('logout-link').style.display = 'none';
+            }
+        }
+        
+        /**
+         * 退出登录功能
+         * 清除localStorage中的登录信息并跳转至登录页面
+         */
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            checkLoginStatus();
+            window.location.href = 'shopping_login.html';
+        });
+        
+        /**
+         * 加载商品数据
+         * 从URL参数获取商品ID，根据ID加载对应的商品信息并更新页面
+         * 已修正图片路径，确保与首页猜你喜欢模块的图片一致
+         */
+        function loadProductData() {
+            // 使用URLSearchParams API获取URL中的查询参数
+            // 此功能实现了从首页点击商品到详情页的数据传递
+            const urlParams = new URLSearchParams(window.location.search);
+            // 获取商品ID，如果没有ID参数则默认使用ID为'1'的商品
+            const productId = urlParams.get('id') || '1';
+            
+            // 模拟商品数据库 - 实际项目中应从后端API获取
+            // 商品数据结构包含：标题、价格、描述和图片路径
+            // 所有商品图片路径已与首页保持一致，确保用户体验的连贯性
+            const products = {
+                '1': {
+                    title: '休闲外套',
+                    price: 199.00,
+                    description: '这款休闲外套采用高品质面料制作，穿着舒适透气，设计简约大方，适合各种场合穿着。多种颜色可选，尺码齐全，是您秋季必备的单品。',
+                    image: './2/cainixihuan/1.png' // 与首页商品1保持一致的图片路径
+                },
+                '2': {
+                    title: '剃须刀',
+                    price: 2999.00,
+                    description: '高品质剃须刀，采用先进的剃须技术，提供顺滑舒适的剃须体验，续航持久，是您日常护理的好帮手。',
+                    image: './2/cainixihuan/2.png' // 与首页商品2保持一致的图片路径
+                },
+                '3': {
+                    title: '小风扇',
+                    price: 59.00,
+                    description: '便携式小风扇，风力强劲，静音设计，USB充电，方便携带，是您夏季防暑降温的好伙伴。',
+                    image: './2/cainixihuan/3.png' // 与首页商品3保持一致的图片路径
+                },
+                '4': {
+                    title: '护肤品',
+                    price: 399.00,
+                    description: '高品质护肤品套装，深层滋养肌肤，改善肤质，提亮肤色，让您拥有健康美丽的肌肤。',
+                    image: './2/cainixihuan/4.png' // 与首页商品4保持一致的图片路径
+                },
+                '5': {
+                    title: '精品佳酿',
+                    price: 299.00,
+                    description: '精选精品佳酿，口感醇厚，香气浓郁，包装精美，是您送礼或自饮的绝佳选择。',
+                    image: './2/cainixihuan/5.png' // 与首页商品5保持一致的图片路径
+                }
+            };
+            
+            // 根据商品ID查找对应商品数据
+            // 如果指定ID的商品不存在，则使用ID为'1'的默认商品
+            const product = products[productId] || products['1'];
+            
+            // 更新页面上的商品标题
+            document.getElementById('productTitle').textContent = product.title;
+            
+            // 更新商品价格，使用toFixed(2)确保价格显示两位小数
+            document.getElementById('productPrice').textContent = `¥${product.price.toFixed(2)}`;
+            
+            // 更新商品描述信息
+            document.getElementById('productDescription').textContent = product.description;
+            
+            // 更新商品主图
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = product.image; // 设置图片路径
+        }
+        
+
+        
+        /**
+         * 初始化数量控制功能
+         * 实现商品数量的增加和减少，限制数量范围在1-99之间
+         */
+        function initQuantityControl() {
+            // 获取DOM元素引用
+            const decreaseBtn = document.getElementById('decreaseBtn'); // 减少按钮
+            const increaseBtn = document.getElementById('increaseBtn'); // 增加按钮
+            const quantityInput = document.getElementById('quantityInput'); // 数量输入框
+            
+            // 为减少数量按钮添加点击事件监听
+            decreaseBtn.addEventListener('click', function() {
+                // 将输入框的值转换为整数
+                let currentValue = parseInt(quantityInput.value);
+                // 数量不能小于1，确保最低购买数量为1
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1; // 减少数量
+                }
+            });
+            
+            // 为增加数量按钮添加点击事件监听
+            increaseBtn.addEventListener('click', function() {
+                // 将输入框的值转换为整数
+                let currentValue = parseInt(quantityInput.value);
+                // 数量不能大于99，确保购买数量不超过库存限制
+                if (currentValue < 99) {
+                    quantityInput.value = currentValue + 1; // 增加数量
+                }
+            });
+        }
+        
+        /**
+         * 初始化规格选择功能
+         * 实现规格的单选逻辑，同一类型的规格只能选择一个
+         * 使用data-spec属性区分规格类型（颜色/尺码）
+         */
+        function initSpecifications() {
+            // 获取所有规格选项元素
+            const specOptions = document.querySelectorAll('.spec-option');
+            
+            // 为每个规格选项添加点击事件监听
+            specOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 获取当前规格的类型（颜色/尺码）
+                    // 使用dataset API获取data-spec属性的值
+                    const specType = this.dataset.spec;
+                    
+                    // 移除同类型所有规格选项的激活状态
+                    // 使用CSS选择器`[data-spec="${specType}"]`定位同类型的所有规格
+                    document.querySelectorAll(`[data-spec="${specType}"]`).forEach(item => {
+                        item.classList.remove('active'); // 移除active类
+                    });
+                    
+                    // 为当前点击的规格选项添加激活状态
+                    this.classList.add('active'); // 添加active类
+                });
+            });
+        }
+        
+
+        
+        /**
+         * 搜索功能
+         * 为搜索按钮添加点击事件监听，获取输入内容并模拟搜索操作
+         * 实际项目中应替换为真实的搜索API调用
+         */
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            // 获取搜索输入框的值
+            const searchText = document.querySelector('.search-box input').value;
+            // 使用alert模拟搜索结果展示
+            // 实际项目中应将搜索词传递给后端API获取结果
+            alert(`搜索: ${searchText}`);
+        });
+        
+        /**
+         * 回车键搜索功能
+         * 为搜索输入框添加键盘事件监听，当用户按下Enter键时执行搜索
+         * 提升用户体验，支持键盘快捷键操作
+         */
+        document.querySelector('.search-box input').addEventListener('keypress', function(e) {
+            // 检查按下的键是否为Enter键
+            if (e.key === 'Enter') {
+                // 触发搜索按钮的点击事件，复用搜索功能逻辑
+                document.querySelector('.search-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
